@@ -221,6 +221,12 @@ if (contactForm) {
         if (success) {
             formSuccess.hidden = false;
             contactForm.reset();
+            // Record an enquiry conversion only after Formspree accepts the submission.
+            if (typeof window.gtag === 'function') {
+                window.gtag('event', 'conversion', {
+                    send_to: 'AW-18476545759/YR5DCIv0x40dEN_tpupE'
+                });
+            }
         } else {
             formError.hidden = false;
         }
