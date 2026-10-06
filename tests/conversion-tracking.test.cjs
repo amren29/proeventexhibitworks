@@ -13,6 +13,7 @@ for (const file of fs.readdirSync(root).filter(name => name.endsWith('.html'))) 
         const html = fs.readFileSync(path.join(root, file), 'utf8');
         const head = html.split('<head>')[1].split('</head>')[0];
         assert.equal((head.match(/src="https:\/\/www.googletagmanager.com\/gtag\/js\?id=AW-18476545759"/g) || []).length, 1);
+        assert.equal((head.match(/AW-\d+/g) || []).length, 2, `${file} should load only the current Google Ads tag`);
         const context = { window: {} };
         vm.createContext(context);
         for (const match of head.matchAll(/<script>([\s\S]*?)<\/script>/g)) {
@@ -25,6 +26,31 @@ for (const file of fs.readdirSync(root).filter(name => name.endsWith('.html'))) 
         assert.equal(calls.filter(args => args[0] === 'event').length, 0);
     });
 }
+
+const whatsappHandler = source.split('/* ---- WhatsApp conversion tracking')[1].split('/* ---- Contact form')[0];
+
+test('a WhatsApp click records exactly one WhatsApp conversion', () => {
+    let clickHandler;
+    const calls = [];
+    const whatsappLink = {
+        addEventListener: (event, handler) => {
+            if (event === 'click') clickHandler = handler;
+        }
+    };
+    const context = {
+        document: { querySelectorAll: () => [whatsappLink] },
+        window: { gtag: (...args) => calls.push(args) }
+    };
+
+    vm.runInNewContext(whatsappHandler, context);
+    assert.equal(calls.length, 0);
+    clickHandler();
+    assert.deepEqual(calls, [[
+        'event',
+        'conversion',
+        { send_to: 'AW-18476545759/6DdaCP7gvY0dEN_tpupE' }
+    ]]);
+});
 
 async function submit(outcome, tracking = true) {
     let callback;
