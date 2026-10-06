@@ -199,13 +199,13 @@ if (contactForm) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = 'Sending…';
 
-        // Formspree — sends to event@proeventexhibition.my
+        // Formspree — Website Enquiries routes to proeventexhibitworks@gmail.com
         let success = false;
         try {
             const data = new FormData(contactForm);
             data.append('_replyto', data.get('email'));
             data.append('_subject', `New Enquiry: ${data.get('service') || 'General'} — Pro Event & Exhibition`);
-            const res = await fetch('https://formspree.io/f/xnjealnq', {
+            const res = await fetch('https://formspree.io/f/xrpebgpd', {
                 method: 'POST',
                 body: data,
                 headers: { Accept: 'application/json' }
