@@ -183,6 +183,17 @@ window.addEventListener('scroll', () => {
     if (heroGlow2) heroGlow2.style.transform = `translateY(${y * 0.08}px)`;
 }, { passive: true });
 
+/* ---- WhatsApp conversion tracking ------------------------ */
+document.querySelectorAll('a[href*="wa.me/60189023676"]').forEach(link => {
+    link.addEventListener('click', () => {
+        if (typeof window.gtag === 'function') {
+            window.gtag('event', 'conversion', {
+                send_to: 'AW-18476545759/6DdaCP7gvY0dEN_tpupE'
+            });
+        }
+    });
+});
+
 /* ---- Contact form ---------------------------------------- */
 const contactForm = document.getElementById('contactForm');
 const formSuccess = document.getElementById('formSuccess');

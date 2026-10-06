@@ -27,7 +27,9 @@ for (const file of fs.readdirSync(root).filter(name => name.endsWith('.html'))) 
     });
 }
 
-const whatsappHandler = source.split('/* ---- WhatsApp conversion tracking')[1].split('/* ---- Contact form')[0];
+const whatsappHandler = '/* ---- WhatsApp conversion tracking' + source
+    .split('/* ---- WhatsApp conversion tracking')[1]
+    .split('/* ---- Contact form')[0];
 
 test('a WhatsApp click records exactly one WhatsApp conversion', () => {
     let clickHandler;
@@ -45,11 +47,10 @@ test('a WhatsApp click records exactly one WhatsApp conversion', () => {
     vm.runInNewContext(whatsappHandler, context);
     assert.equal(calls.length, 0);
     clickHandler();
-    assert.deepEqual(calls, [[
-        'event',
-        'conversion',
-        { send_to: 'AW-18476545759/6DdaCP7gvY0dEN_tpupE' }
-    ]]);
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0][0], 'event');
+    assert.equal(calls[0][1], 'conversion');
+    assert.equal(calls[0][2].send_to, 'AW-18476545759/6DdaCP7gvY0dEN_tpupE');
 });
 
 async function submit(outcome, tracking = true) {
